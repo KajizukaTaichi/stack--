@@ -27,6 +27,7 @@ fn main() {
             ("double-quote".to_string(), Type::String("\"".to_string())),
             ("tab".to_string(), Type::String("\t".to_string())),
         ]),
+        returns: 0,
     };
 
     if let Some(path) = cli.file {
@@ -131,12 +132,14 @@ enum Instruction {
     Delete,
     Append,
     Exit,
+    Return,
 }
 
 #[derive(Clone, Debug)]
 struct Core {
     stack: Vec<Type>,
     memory: HashMap<String, Type>,
+    returns: usize,
 }
 
 impl Core {
@@ -241,6 +244,7 @@ impl Core {
                     "delete" => result.push(Type::Instruction(Instruction::Delete)),
                     "append" => result.push(Type::Instruction(Instruction::Append)),
                     "exit" => result.push(Type::Instruction(Instruction::Exit)),
+                    "return" => result.push(Type::Instruction(Instruction::Return)),
                     _ => {}
                 }
             }
@@ -396,6 +400,9 @@ impl Core {
                         self.stack.push(Type::Block(block));
                     }
                     Instruction::Exit => exit(0),
+                    Instruction::Return => {
+                        self.returns = self.pop().get_number() as usize;
+                    }
                 },
                 Type::Variable(name) => {
                     if let Some(value) = self.memory.get(&name) {
@@ -405,6 +412,10 @@ impl Core {
                     }
                 }
                 other => self.stack.push(other),
+            }
+            if self.returns != 0 {
+                self.returns -= 1;
+                return;
             }
         }
     }
