@@ -1,0 +1,17 @@
+0 "i" let
+{$i 100 less-than} {
+    $i 1 add "i" let
+    $i 15 mod 0 equal {
+        "FizzBuzz" $new-line concat print
+        2 return
+    } when
+    $i 3 mod 0 equal {
+        "Fizz" $new-line concat print
+        2 return
+    } when
+    $i 5 mod 0 equal {
+        "Buzz" $new-line concat print
+        2 return
+    } when
+    $i $new-line concat print
+} while
